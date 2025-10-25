@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generative AI</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+</head>
+<body>
+
+    <div class="container">
+        <h1 id="topic">Generative AI 🎨</h1>
+
+        <!-- คำอธิบายเว็บ -->
+        <p class="description">
+            เว็บนี้ช่วยให้คุณค้นหาผลงานศิลปะที่มีชื่อเสียงจากประเทศต่าง ๆ เพียงแค่พิมพ์ชื่อประเทศลงไป แล้วกด "Click me!" ระบบจะตอบกลับเป็นชื่อผลงาน ศิลปิน และแกลเลอรีในภาษาไทย
+        </p>
+
+        <input type="text" id="genai" placeholder="พิมพ์ชื่อประเทศของคุณ...">
+        <button id="gen" type="button" onclick="fetchDataAJax()"><b>Click me!</b></button>
+
+        <h4>Answer</h4>
+        <div id="output" class="output-box"></div>
+    </div>
+
+<script>
+  function fetchDataAJax() {
+    const inputText = document.getElementById("genai").value;
+    const outputElement = document.getElementById("output");
+    outputElement.innerHTML = "wait a minute . . .";
+
+    $.ajax({
+      url: "https://api.openai.com/v1/chat/completions", 
+      type: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "APIKEY"
+      },
+      data: JSON.stringify({
+        "model": "gpt-4",
+        "messages": [
+          {
+            "role": "system",
+            "content": "You are an expert in art. When the user tells the name of the country, you can name famous artworks, the owner's name, and the gallery where they are displayed according to the name of that country. Give result in Thai"
+          }, 
+          {
+            "role": "user",
+            "content":  inputText
+          }
+        ],
+        "temperature": 0.7,
+        "max_tokens": 1000,
+        "top_p": 1
+      }),
+      success: function (data) { 
+        outputElement.innerHTML =  data.choices[0].message.content ;
+      },
+      error: function (error) {
+        console.error('Error:', error);
+      }
+    });
+  }
+</script>
+
+</body>
+</html>
